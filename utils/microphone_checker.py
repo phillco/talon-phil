@@ -48,10 +48,19 @@ class Actions:
 
     def current_system_input():
         """Get current system input"""
-        stdout, stdin, exit_code = actions.user.execparen(
-            ["soundsource", "-i"], verbose=False
-        )
-        if exit_code != 0:
+        try:
+            stdout, stdin, exit_code = actions.user.execparen(
+                ["soundsource", "-i"], verbose=False, timeout=5
+            )
+            if exit_code != 0:
+                raise Exception(f"exit code: {exit_code}")
+                return None
+        except Exception as e:
+            print(f"Error getting system input: {e}")
+            actions.app.notify(
+                f"Error getting system input: {e}",
+                "Error getting system input",
+            )
             return None
 
         return stdout
@@ -59,6 +68,8 @@ class Actions:
     def check_system_input(is_from_script: Optional[bool] = False):
         """Check system input"""
         current = actions.user.current_system_input()
+        if current is None:
+            return
 
         d = " (from script)" if is_from_script else ""
         should_notify = not is_from_script
@@ -74,6 +85,9 @@ class Actions:
                     actions.app.notify(
                         f"Switched from {current} to {new_current}",
                         f"Fixed microphone selection{d}",
+                    )
+                    actions.user.play(
+                        "~/Dropbox/Resources/AdvanceWars/song113.wav", volume=0.2
                     )
                 actions.user.check_microphone_volume(True, should_notify)
             else:
@@ -121,6 +135,7 @@ class Actions:
 
 
 def cron_():
+    # return
     actions.user.check_system_input()
     actions.user.check_microphone_volume()
 
