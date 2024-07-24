@@ -19,9 +19,8 @@ class Actions:
     def dock_autohide_set(desired_state: bool):
         """Set dock autohide to the desired state"""
         existing = actions.user.dock_is_autohide()
-        if existing == desired_state:
-            return
-        actions.user.dock_toggle_autohide()
+        if existing != desired_state:
+            actions.user.dock_toggle_autohide()
 
     def dock_autohide_postactions():
         """Actions to run after changing dock autohide"""
