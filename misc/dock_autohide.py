@@ -1,4 +1,5 @@
 from talon import Context, Module, actions
+from talon.mac import applescript
 
 ctx = Context()
 mod = Module()
@@ -31,7 +32,7 @@ class Actions:
 
     def dock_toggle_autohide():
         """Toggle dock autohide"""
-        # NOTE(pcohen): I customize this shortcut; the default is
-        # cmd-alt-shift-d
-        actions.key("cmd-alt-shift-d")
+        applescript.run(
+            """tell application "System Events" to set autohide of dock preferences to not (autohide of dock preferences)"""
+        )
         actions.user.dock_autohide_postactions()
