@@ -9,10 +9,12 @@ mod = Module()
 class Actions:
     def dock_is_autohide() -> bool:
         """Return whether the dock is set to autohide"""
-        existing = actions.user.exec("defaults read com.apple.dock autohide")[0]
-        if existing not in ["0", "1"]:
+        existing = applescript.run(
+            'tell application "System Events" to get autohide of dock preferences'
+        )
+        if existing not in ["false", "true"]:
             raise RuntimeError(f"Unexpected dock autohide value: {existing}")
-        return int(existing) == 1
+        return existing == "true"
 
     def dock_autohide_set(desired_state: bool):
         """Set dock autohide to the desired state"""
